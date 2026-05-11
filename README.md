@@ -9,7 +9,7 @@ This project demonstrates cost optimization by deleteing the stale s3 buckets by
 #### 3. IAM User and Roles
 #### 4. Cloud Watch
 #### 5. SNS Topic
-#### 6. Event bridge scheduler
+#### 6. Event scheduler
 
 ## Step 1 : Create a IAM user with required permisions and attach required inline policies.
 
@@ -130,6 +130,9 @@ sns.publish(...)                //Sends email/message
 cloudwatch_main.put_dashboard(...)     //Creates CloudWatch dashboard:Global-S3BucketDashboard
 ```
 
+<img width="1027" height="680" alt="s3-stale-bucket4" src="https://github.com/user-attachments/assets/70d4351d-3a3b-41cb-ab2e-727d39bee71b" />
+
+
 ### ✅ 10. Final Response
 ```
 return {
@@ -140,7 +143,22 @@ return {
 
 ## Step 4 : Create SNS topic 
 
+<img width="937" height="551" alt="s3-stale-bucket2" src="https://github.com/user-attachments/assets/97b1f2dd-60cb-4268-83dd-9d1ccb33a672" />
+
+<img width="872" height="507" alt="s3-stale-bucket3" src="https://github.com/user-attachments/assets/2c68afaa-af3d-43ab-bae9-0685d0ea2451" />
+
+## Step 5 : Create Event scheduler : 00 10 ? JAN-DEC SUN *
+
+<img width="1232" height="580" alt="s3-stale-bucket5" src="https://github.com/user-attachments/assets/daf8bedf-1a24-41f0-a910-a2b2bf863987" />
+
+## Delete the resources after the project completion
+#### Delete the lambda function
+#### Delete the iam role
+#### Delete the event bridge scheduler
+#### Delete the sns topic
+#### Delete the s3 buckets
 
 
 
-## 
+
+

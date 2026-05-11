@@ -1,2 +1,2 @@
 # S3-stale-buckets-Using-Lambda--Cost-Optimization
-To delete s3 stale buckets by using serverless service by AWS called AWS Lambda with Cloud wtach and Event scheduler
+This project demonstrates how to save costs by deleteing the stale s3 buckets by using a serverless service of AWS called AWS Lambda.

@@ -11,4 +11,17 @@ This project demonstrates cost optimization by deleteing the stale s3 buckets by
 #### 5. SNS Topic
 #### 6. Event bridge scheduler
 
+## Step 1 : Create a IAM user with required permisions and attach required inline policies.
 
+## IAM ROLE inline policy
+### * "s3:ListAllMyBuckets",
+### * "s3:ListBucketVersions",
+### * "s3:ListBucket",
+### * "s3:DeleteBucket"
+### * "sns:Publish"
+
+## IAM ROLE permissions :
+### * CloudWatchFullAccess
+### * CloudWatchFullAccessV2
+
+## 

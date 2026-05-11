@@ -14,14 +14,133 @@ This project demonstrates cost optimization by deleteing the stale s3 buckets by
 ## Step 1 : Create a IAM user with required permisions and attach required inline policies.
 
 ## IAM ROLE inline policy
-### * "s3:ListAllMyBuckets",
-### * "s3:ListBucketVersions",
-### * "s3:ListBucket",
-### * "s3:DeleteBucket"
-### * "sns:Publish"
+#### * "s3:ListAllMyBuckets",
+#### * "s3:ListBucketVersions",
+#### * "s3:ListBucket",
+#### * "s3:DeleteBucket"
+#### * "sns:Publish"
 
 ## IAM ROLE permissions :
-### * CloudWatchFullAccess
-### * CloudWatchFullAccessV2
+#### * CloudWatchFullAccess
+#### * CloudWatchFullAccessV2
+
+## Step 2 : Create s3 buckets with and without uploading the objects into it. (Optional : in diffrent locations)
+
+## Step 3 : Create AWS LAmbda function with the python code :
+#### Lambda time out : 4 mins
+#### Runtime python3.14
+
+<img width="840" height="432" alt="s3-stale-bucket6" src="https://github.com/user-attachments/assets/35407626-7804-4110-8387-418cdbba9711" />
+
+## Note : Explanation of python code 
+
+### 🚀 1. Imports & Setup
+```
+import boto3   //AWS SDK (used to interact with S3, SNS, CloudWatch)
+import json    //for dashboard creation
+import time    //timestamps
+from datetime import datetime, timedelta   //calculate age of buckets/objects
+```
+
+### ⚙️ 2. Configuration Section 
+```
+SNS_TOPIC_ARN = '...'  //Where alerts are sent
+REGION = 'us-east-1'   //AWS region
+DRY_RUN = False        //If True → simulate deletion
+NOTIFY_ONLY = False    //If True → only alert, no deletion
+```
+
+#### S3 Filtering Logic
+```
+STALE_DAYS_THRESHOLD = 0  
+EMPTY_BUCKETS_ONLY = True
+CHECK_OBJECT_LAST_MODIFIED = True
+```
+
+### ☁️  3. AWS Clients
+```
+cloudwatch_main = boto3.client('cloudwatch', region_name=REGION)    //Send metrics → CloudWatch
+sns = boto3.client('sns', region_name=REGION)                       //Send alerts → SNS
+```
+
+### 🧠 4. Function: is_bucket_stale() : This is the core logic of your script
+
+#### 1. Get bucket objects
+```
+response = s3_client.list_objects_v2(Bucket=bucket_name, MaxKeys=1)     //Checks if bucket has any objects
+```
+
+#### 2. Check if empty
+```
+is_empty = 'Contents' not in response     //If no objects → bucket is empty
+```
+
+#### 3. If EMPTY_BUCKETS_ONLY = True
+```
+if is_empty:
+    days_old = (datetime.now() - creation_date).days   //If bucket is empty, checks how old it is , if older than threshold it is stale
+```
+
+#### 4. If checking object age
+```
+last_modified = obj['LastModified']
+days_old = (datetime.now() - last_modified).days   //Check last modified date, If recent - Not stale, If old - stale
+```
+
+### Error Handling
+```
+except Exception as e:    //Prevents crash if bucket access fails
+```
+
+### 🔁 5. Main Function: lambda_handler() : This is what AWS Lambda executes
+```
+s3 = boto3.client('s3')      //Create S3 client
+
+total_buckets = 0
+stale_buckets_global = 0     //Initialize counters
+
+response = s3.list_buckets()  //List all buckets
+
+for bucket in all_buckets:    //Loop through buckets
+
+if is_bucket_stale(...):     //If bucket is stale
+
+bucket_resource.objects.all().delete()
+bucket_resource.object_versions.all().delete()
+s3.delete_bucket(Bucket=bucket_name)             // Deleting Buckets (Important)
+```
+
+### 📊 6. Send Metrics to CloudWatch
+```
+cloudwatch_main.put_metric_data(...)     //Used for dashboards & monitoring
+```
+
+### 📈 7. Create Dashboard
+```
+widgets = [...]                 //Builds: Total bucket count widget,Stale bucket count widget, Text section (names + results)
+```
+
+### 📧  8. Send SNS Notification
+```
+sns.publish(...)                //Sends email/message
+```
+
+### 📊  9. Push Dashboard
+```
+cloudwatch_main.put_dashboard(...)     //Creates CloudWatch dashboard:Global-S3BucketDashboard
+```
+
+### ✅ 10. Final Response
+```
+return {
+    'statusCode': 200,
+    'body': ...
+}                                 //Returns summary:Total buckets,stale buckets, and mode
+```
+
+## Step 4 : Create SNS topic 
+
+
+
 
 ## 
